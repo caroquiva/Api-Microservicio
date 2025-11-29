@@ -1,0 +1,59 @@
+server:
+  port: 8081
+spring:
+  cloud:
+    gateway:
+      routes:
+        # Define una ruta para el microservicio de cócteles
+        - id: cocktail_route
+          # El URI de destino (target)
+          uri: https://www.thecocktaildb.com/
+          # Predicados: define qué peticiones coinciden con esta ruta
+          predicates:
+            # Coincide si el path de la petición entrante es /api/cocktails/**
+            - Path=/api/cocktails/**
+          # Filtros: modifica la petición antes de enviarla o la respuesta antes de devolverla
+          filters:
+            # Reescribe el path: elimina /api/cocktails y deja el resto (e.g., /search.php?i=vodka)
+            - RewritePath=/api/cocktails(?<segment>.*), /api/json/v1/1/${segment}
+            
+        - id: SERVICIO-AUTENTICACION
+          uri: http://localhost:9292/
+          predicates:
+            - Path=/autenticacion/**
+          
+            
+        - id: SERIVICIO-CLINICA
+          uri: http://localhost:3000/api/v1/clinica/gestion-historias-clinicas/
+          predicates:
+            - Path=/clinica/**
+            
+        - id: SERVICIO-PACIENTE
+          uri: http://127.0.0.1:54467/
+          predicates:
+            - Path=/api/v1/clinica/gestion-pacientes/**
+            
+        - id: SERVICIO-TUMORES
+          uri: http://localhost:3000/api/v1/clinica/gestion-tipos-tumores/
+          predicates:
+            - Path=/tumores/**
+            
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedHeaders:
+              - "*" 
+            allowCredentials: false
+            allowedOrigins: "http://localhost:4200/" 
+            allowedMethods:
+              - GET
+              - POST
+              - OPTIONS
+
+            
+              
+     
+
+            
+
+  
