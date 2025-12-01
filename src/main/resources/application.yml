@@ -39,7 +39,7 @@ spring:
             allowedHeaders:
               - "*"
             allowCredentials: false
-            allowedOrigins: "http://front-angular-service:4200/"
+            allowedOrigins: "http://localhost:4200/"
             allowedMethods:
               - GET
               - POST
