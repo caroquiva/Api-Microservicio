@@ -1,59 +1,49 @@
 server:
   port: 8081
+
+jwt:
+  secret: "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"
+
 spring:
   cloud:
     gateway:
       routes:
-        # Define una ruta para el microservicio de cócteles
-        - id: cocktail_route
-          # El URI de destino (target)
-          uri: https://www.thecocktaildb.com/
-          # Predicados: define qué peticiones coinciden con esta ruta
-          predicates:
-            # Coincide si el path de la petición entrante es /api/cocktails/**
-            - Path=/api/cocktails/**
-          # Filtros: modifica la petición antes de enviarla o la respuesta antes de devolverla
-          filters:
-            # Reescribe el path: elimina /api/cocktails y deja el resto (e.g., /search.php?i=vodka)
-            - RewritePath=/api/cocktails(?<segment>.*), /api/json/v1/1/${segment}
-            
         - id: SERVICIO-AUTENTICACION
-          uri: http://localhost:9292/
+          uri: http://autenticacion-service:9292/
           predicates:
             - Path=/autenticacion/**
-          
-            
-        - id: SERIVICIO-CLINICA
-          uri: http://localhost:3000/api/v1/clinica/gestion-historias-clinicas/
+
+        - id: SERVICIO-CLINICA
+          uri: http://clinica-app-service:3000
           predicates:
-            - Path=/clinica/**
-            
-        - id: SERVICIO-PACIENTE
-          uri: http://127.0.0.1:54467/
+            - Path=/api/v1/clinica/**
+
+        - id: SERVICIO-GENOMICA-GENES
+          uri: http://django-service:8000
           predicates:
-            - Path=/api/v1/clinica/gestion-pacientes/**
-            
-        - id: SERVICIO-TUMORES
-          uri: http://localhost:3000/api/v1/clinica/gestion-tipos-tumores/
+            - Path=/genes/**
+
+        - id: SERVICIO-GENOMICA-VARIANTES-GENETICAS
+          uri: http://django-service:8000
           predicates:
-            - Path=/tumores/**
-            
+            - Path=/variants/**
+
+        - id: SERVICIO-GENOMICA-REPORTES
+          uri: http://django-service:8000
+          predicates:
+            - Path=/reports/**
+
       globalcors:
         corsConfigurations:
           '[/**]':
             allowedHeaders:
-              - "*" 
+              - "*"
             allowCredentials: false
-            allowedOrigins: "http://localhost:4200/" 
+            allowedOrigins: "http://front-angular-service:4200/"
             allowedMethods:
               - GET
               - POST
               - OPTIONS
-
-            
-              
-     
-
-            
-
-  
+              - DELETE
+              - PATCH
+              - PUT
